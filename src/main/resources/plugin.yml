@@ -1,0 +1,5 @@
+name: broker
+author: Hancho
+version: 1.0.0
+main: hancho.nukkit.plugin.broker.broker
+api: [1.0.0]
