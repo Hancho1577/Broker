@@ -7,6 +7,11 @@ import com.nukkitx.protocol.bedrock.BedrockClient;
 import cn.nukkit.Server;
 import cn.nukkit.plugin.PluginBase;
 import cn.nukkit.scheduler.AsyncTask;
+import com.nukkitx.protocol.bedrock.BedrockPacket;
+import com.nukkitx.protocol.bedrock.handler.BedrockPacketHandler;
+import com.nukkitx.protocol.bedrock.packet.LoginPacket;
+import com.nukkitx.protocol.bedrock.v389.Bedrock_v389;
+import com.nukkitx.protocol.bedrock.v390.Bedrock_v390;
 
 public class broker extends PluginBase {
 	// static File file;
@@ -19,7 +24,7 @@ public class broker extends PluginBase {
 	public void onEnable() {
 		// file = new File("/PMEBroker");
 		this.server = getServer();
-		InetSocketAddress bindAddress = new InetSocketAddress("0.0.0.0", 17242);
+		InetSocketAddress bindAddress = new InetSocketAddress("0.0.0.0", 54231);
 		BedrockClient client = new BedrockClient(bindAddress);
 
 		// Bind the port
@@ -28,8 +33,9 @@ public class broker extends PluginBase {
 
 			@Override
 			public void onRun() {
-				InetSocketAddress addressToPing = new InetSocketAddress("ccc1.kro.kr", 19140);
-				client.ping(addressToPing).whenComplete((pong, throwable) -> {
+				if(Server.getInstance().getOnlinePlayers().size() < 1) return;
+				InetSocketAddress addressToPing = new InetSocketAddress("localhost", 19132);
+				client.connect(addressToPing).whenComplete((session, throwable) -> {
 				    if (throwable != null) {
 				    	server.getOnlinePlayers().forEach((id, pl) -> {
 							pl.sendTitle("§a재부팅 대기중", "§f아직 서버가 오프라인 입니다.", 10, 10, 10);
@@ -37,6 +43,7 @@ public class broker extends PluginBase {
 				        return;
 				    }
 				    transform();
+					session.disconnect();
 				    // Pong received.
 				}).join();
 
@@ -58,7 +65,7 @@ public class broker extends PluginBase {
 			public void transform() {
 				server.getOnlinePlayers().forEach((id, pl) -> {
 					server.broadcastMessage("§e" + pl.getName() + "§f님이 초코서버로 이동합니다.");
-					pl.transfer(new InetSocketAddress("ccc1.kro.kr", 19140));
+					pl.transfer(new InetSocketAddress("ccc1.kro.kr", 19132));
 				});
 			}
 		}, 20 * 11, true);
